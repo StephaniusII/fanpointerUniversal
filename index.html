@@ -6,6 +6,7 @@
         <title>Credits Page</title>
         <link rel="stylesheet" href="Styles.css">
         <script src="fanpointer/fan.js"></script>
+        <script src="fanpointer/touchInputHandler.js"></script>
 
 
         <style>
@@ -128,13 +129,6 @@
         </style>
         <script>        
             
-            addEventListener("touchstart", function (e) { //makes sure the fanpointer is not loaded if there is a touchinput.
-                document.getElementById("modeContainer").classList.add("invisible");
-                disableFan();
-                document.getElementById("screenDiv").classList.remove("expanded");
-            }, { passive: false });
-
-
             let scriptLoaded = false;
             function toggleFan() { //enables and disables the events and animations of the fan script.
                 if (!fanEnabled) {

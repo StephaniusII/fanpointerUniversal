@@ -7,8 +7,6 @@ Date: 19.04.2025
 Some elements were created with the help of Microsoft Copilot.
 */
 
-import "touchInputHanler.js";
-
 const cursorVelocity    =   {vel:   0.0,     velX:  0.0,  velY:  0.0};
 const accelerationXY    =   {x:     0.0,     y:     0.0};
 const relPos            =   {distance: 0.0, angle: 0.0, angleOffset: 0.0};
@@ -37,6 +35,8 @@ function initFan(){
     addEventListener("mousemove", moveFan, { passive: false});
     addEventListener("wheel", turnFan, { passive: false});    
     addEventListener("click", clicked, {passive: false});
+    addEventListener("dragstart", (e) => e.preventDefault(), {passive: false});
+    addEventListener("dragover", (e) => e.preventDefault(), {passive: false});
     fanEnabled = true;
     initialized = true;
 
@@ -134,7 +134,6 @@ function clicked(){
 
 function moveFan(e){
     if (fanEnabled){
-        e.preventDefault();
         let fanY = e.clientY;
         let fanX = e.clientX;
         fanpointer.style.top=fanY+"px";
@@ -154,9 +153,14 @@ function turnFan(e){
     }
 }
 
-function turnFanTouch(e){
+function turnFanTouch(angleDiff){
     if (fanEnabled){
+        fanAngle=(fanAngleStart+angleDiff*1.5)%(2*Math.PI);
+        if (fanAngle < 0){
+            fanAngle = 2*Math.PI + fanAngle;
+        }
 
+        fanpointer.style.transform = "rotate("+fanAngle+"rad)";
     }
 }
 
