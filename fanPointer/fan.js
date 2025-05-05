@@ -52,7 +52,7 @@ function initFan(){
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.type = "text/css";
-    link.href = "./fanPointer/stylesFan.css"; // Replace with your stylesheet URL
+    link.href = "./fanpointer/stylesFan.css"; // Replace with your stylesheet URL
     document.head.appendChild(link);
 
     //append the HTML elements for the fanPointer to the body
@@ -62,19 +62,19 @@ function initFan(){
 
     container.innerHTML = `
         <div id="cursorDiv">
-            <img id="cursor" src="./fanPointer/images/cursor.webp" alt="">
+            <img id="cursor" src="./fanpointer/images/cursor.webp" alt="">
             <svg class="fsvg" id="pointerSVG">
                 <circle id="pointer" r="4px" cx="4px" cy="4px"></circle>
             </svg>
         </div>
         <div id="fanpointer">
-            <img id="fan" src="./fanPointer/images/fancursor.webp" alt="">
-            <img id="airflow" src="./fanPointer/images/airflow.svg" alt="">
+            <img id="fan" src="./fanpointer/images/fancursor.webp" alt="">
+            <img id="airflow" src="./fanpointer/images/airflow.svg" alt="">
         </div>
         <div id="debuggingView"> 
             <span id="posSpan"></span>
-            <img id="crosshair1" class="crosshair" src="./fanPointer/images//crosshair.svg" height="50px" alt="">
-            <img id="crosshair2" class="crosshair" src="./fanPointer/images//crosshair.svg" height="50px" alt="">
+            <img id="crosshair1" class="crosshair" src="./fanpointer/images//crosshair.svg" height="50px" alt="">
+            <img id="crosshair2" class="crosshair" src="./fanpointer/images//crosshair.svg" height="50px" alt="">
             <svg class="fsvg">
                 <line id="accelerationVector" x1="0px" x2="20px" y1="0px" y2="20px" stroke="red" fill="none" stroke-width="4"></line>
                 <line id="speedVector" x1="0px" x2="20px" y1="0px" y2="20px" stroke="blue" fill="none" stroke-width="2"></line>
