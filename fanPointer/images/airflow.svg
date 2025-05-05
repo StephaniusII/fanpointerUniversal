@@ -1,0 +1,83 @@
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define the mask -->
+    <defs>
+        <mask id="animatedMask1">
+        <!-- Background (fully visible area) -->
+            <path
+                d="M0,50 Q50,20 100,50 T200,50 T300,50 T400,50 T500,50 T600, 50"
+                stroke="#ffffff"
+                fill="none"
+                stroke-width="15"
+            >
+                <animateTransform 
+                    attributeName="transform" 
+                    type="translate" 
+                    from="-200 0" 
+                    to="0 0" 
+                    dur="0.75s" 
+                    repeatCount="indefinite" 
+                />
+            </path>
+            <path
+                d="M0,150 Q50,120 100,150 T200,150 T300,150 T400,150 T500,150 T600,150"
+                stroke="#ffffff"
+                fill="none"
+                stroke-width="15"
+            >
+                <!-- For animation -->
+                <animateTransform 
+                attributeName="transform" 
+                type="translate" 
+                from="-200 0" 
+                to="0 0" 
+                dur="0.5s" 
+                repeatCount="indefinite" 
+                />
+            </path>
+            <path
+                d="M0,250 Q50,220 100,250 T200,250 T300,250 T400,250 T500,250 T600,250"
+                stroke="#ffffff"
+                fill="none"
+                stroke-width="15"
+            >
+                <!-- For animation -->
+                <animateTransform 
+                attributeName="transform" 
+                type="translate" 
+                from="-200 0" 
+                to="0 0" 
+                dur="0.5s" 
+                repeatCount="indefinite" 
+                />
+            </path>
+
+            <path
+                d="M0,350 Q50,320 100,350 T200,350 T300,350 T400,350 T500,350 T600,350"
+                stroke="#ffffff"
+                fill="none"
+                stroke-width="15"
+            >
+                <!-- For animation -->
+                <animateTransform 
+                attributeName="transform" 
+                type="translate" 
+                from="-200 0" 
+                to="0 0" 
+                dur="0.75s" 
+                repeatCount="indefinite" 
+            />
+            </path>
+            <!-- Moving circle (cut-out area) -->
+            <rect height="400" width="400" fill="url(#fadeGradient)"/>
+        </mask>
+
+    <linearGradient id="fadeGradient" gradientUnits="objectBoundingBox">
+        <stop offset="0%" stop-opacity="1"/>
+        <stop offset="10%" stop-opacity="0"/>
+        <stop offset="100%" stop-opacity="1"/>
+    </linearGradient>
+    </defs>
+
+    <!-- Background rectangle with the mask applied -->
+    <rect x="0" y="0" width="600" height="600" fill="#67d9f3" mask="url(#animatedMask1)"/>
+</svg>

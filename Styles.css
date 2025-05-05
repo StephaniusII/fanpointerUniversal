@@ -1,0 +1,170 @@
+root {
+    --baseColor: #3d240e;
+    --secondaryColor: #fffaf0;
+    --highlightColor: #ffe6b4;
+}
+
+body {
+    color: #210e00;
+    margin: 0;
+    padding: 0;
+    padding-top: 100px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    text-align: center;
+    margin-top: 20px;
+    color: #210e00;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 60%;
+    margin: 2em auto;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.horizontal{
+    flex-direction: row;
+}
+
+.buttonContainer {
+    display: flex;
+    height: 8em;
+    justify-content: center;
+    align-items: center;
+}
+
+a{
+    display: block;
+    margin: 10px 0;
+    color: #210e00;
+    text-decoration: none;
+    font-size: 18px;
+    border: 1px solid #210e00;
+    padding: 10px;
+    border-radius: 5px;
+    transition: color 0.3s ease;
+}
+
+
+
+@keyframes linkHover {
+    0% { background-color: transparent; }
+    100% { background-color: #e6a36166; }
+}
+
+@keyframes linkHoverBack {
+    0% { background-color: #e6a36166; }
+    100% { background-color: transparent; }
+}
+
+a:hover {
+    animation-name: linkHover;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+    background-color: #e6a36166;
+}
+a:not(:hover) {
+    animation-name: linkHoverBack;
+    animation-duration: 0.3s;
+    animation-fill-mode: backwards;
+}
+
+
+.buttonGreen {
+    border: 0.15em solid #2e3700;
+    color: #2e3700;
+    padding: 0.5em 0.6em;
+    text-align: center;
+    font-size: 1em;
+    margin: 0.5em 0.25em;
+    cursor: pointer;
+    background-color: #f8ffd5;
+    border-radius: 0.6em;
+    transition: background-color 0.3s;
+}
+
+.buttonGreen:hover {
+    background-color: #f1ffa9;
+}
+
+.buttonBlue {
+    border: 0.15em solid rgb(0, 5, 43);
+    color: rgb(0, 5, 43);
+    padding: 0.5em 0.6em;
+    text-align: center;
+    font-size: 1em;
+    margin: 0.5em 0.25em;
+    cursor: pointer;
+    background-color: rgb(209, 215, 255);
+    border-radius: 0.6em;
+}
+
+.buttonRed {
+    border: 0.15em solid #2b0006;
+    color: #2b0006;
+    padding: 0.5em 0.6em;
+    text-align: center;
+    font-size: 0.75em;
+    margin: 0.5em 0.25em;
+    cursor: pointer;
+    background-color: #ffc8cf;
+    border-radius: 0.6em;
+}
+
+.tStructure{
+    width: 20em;
+    margin:auto;
+    text-align: center;
+}
+
+@media (max-width: 1080px) and (min-width: 600px) {
+    body{
+        background-position: top;
+    }
+    .container {
+        width: 80%;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        background-image: url("./ressources/pexels-parimoofarhaan-14222593.webp");
+        /*
+        License Information:
+        This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+        For more details, visit: https://creativecommons.org/licenses/by-sa/4.0/
+        source: https://www.pexels.com/photo/red-leaf-trees-near-the-road-33109/
+        */
+        padding-top: 2%;
+        background-position: top;
+    }
+
+    .container {
+        width: 90%;
+
+        opacity: 1;
+    }
+    .buttonContainer {
+        height: 10em;
+    }
+    .buttonGreen, .buttonBlue, .buttonRed {
+        margin: 0.5em 0;
+    }
+    .tStructure{
+        width: 100%;
+    }
+}
+

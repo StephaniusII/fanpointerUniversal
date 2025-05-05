@@ -1,0 +1,161 @@
+html, body {
+    margin: 0px;
+}
+
+::-webkit-scrollbar{
+    visibility: collapse;
+    display:none;
+}
+
+
+.fanstuff{
+    margin: 0px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    display: block;
+    height: 100%;
+    width: 100%;
+    background-color: none(255, 254, 219);
+    cursor: none;
+    visibility: collapse;
+}
+
+.fanstuff.expanded{
+    visibility: visible;
+}
+
+.fsvg{
+
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 1px;
+    width: 1px;
+    overflow: visible;
+}
+
+#fanpointer {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 1px;
+    width: 1px;
+    transform-origin: center;
+    transform: rotate(0deg);
+}
+
+#fan{
+    position: absolute;
+    transform-origin: center;
+    transform: translate(-41px, -72px)
+}
+
+
+#airflow{
+    position: inherit;
+    top: 0px;
+    left: 0px;
+    height:140px;
+    transform-origin: center;
+    transform: translate(30px, -72px)
+}
+
+#cursorDiv{
+    position: absolute;
+    top: 500px;
+    left: 500px;
+    height: 0px;
+    width: 0px;
+    overflow: visible;
+    transform: translate(-0px, -0px);
+}
+
+#cursor{
+    position: absolute;
+    height: 40px;
+    top:0px;
+    left:0px;
+    transform: translate(-15px, -20px);
+}
+
+#pointerSVG{
+    position: inherit;
+    top: -0px;
+    left: -0px;
+    transform: translate(-5px, -20px);
+}
+
+#pointer{
+    fill: none;
+}
+
+#debuggingView {
+    position: absolute;
+    color: black;
+    font-weight: bold;
+    top: 25px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+    display: none;
+}
+
+.expand{
+    display: inherit;
+}
+
+.crosshair{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    transform: translate(-25px, -25px);
+}
+
+.vector{
+    position: absolute;
+}
+
+@media (max-width: 768px) {
+    #fan{
+        height: 73px;
+        position: inherit;
+        transform-origin: center;
+        transform: translate(-20px, -36px)
+    }
+    
+    
+    #airflow{
+        position: inherit;
+        top: 0px;
+        left: 0px;
+        height:70px;
+        transform-origin: center;
+        transform: translate(15px, -36px)
+    }
+    
+    #cursorDiv{
+        position: absolute;
+        top: 250px;
+        left: 250px;
+        height: 20px;
+    }
+    
+    #cursor{
+        position: relative;
+        height: 20px;
+        top:-10px;
+        left:-10px;
+        transform: translate(-0px, -2.5px);
+    }
+    
+    #pointerSVG{
+        position: inherit;
+        top: -10px;
+        left: -3px;
+        transform: translate(-0px, -0px);
+    }
+
+}

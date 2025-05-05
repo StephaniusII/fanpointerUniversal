@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Credits Page</title>
+        <link rel="stylesheet" href="Styles.css">
+        <script src="fanpointer/fan.js"></script>
+
+
+        <style>
+        @keyframes buttonAlert {
+            0%   {background-color: rgb(255, 176, 184); border: 0.15em solid;}
+            50%  {background-color: rgb(175, 30, 44); border: 0.35em solid;}
+            100%   {background-color: rgb(255, 176, 184); border: 0.15em solid;}
+        }
+        
+        @keyframes buttonHide {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        #unveilCredits{
+            display: block;
+            margin: 10px 0;
+            color: #210e00;
+            text-decoration: none;
+            font-size: 18px;
+            border: 1px solid #210e00;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #unveilCredits :hover {
+            font-weight: 600;
+            animation-name: linkHover;
+            animation-duration: 0.3s;
+            animation-fill-mode: forwards;
+        }
+
+
+        #nonsenseButton {
+            border: 0.15em solid rgb(43, 0, 4);
+            color: rgb(43, 0, 4);
+            width: 100%;
+            padding: 0.5em 0.6em;
+            text-align: center;
+            font-size: 1em;
+            margin: 0.5em 0.25em;
+            cursor: pointer;
+            background-color: rgb(255, 176, 184);
+            border-radius: 0.6em;
+            animation-name: buttonAlert;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #nonsenseButton:hover {
+            animation-name: none;
+            animation-name: buttonHide;
+            animation-duration: 0.2s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+
+        #mouseModeButton{
+            border: 0.15em solid #3e2b00;
+            color: #3e2b00;
+            width: 100%;
+            padding: 0em;
+            text-align: center;
+            font-size: 1em;
+            margin: 0.5em 0.25em;
+            cursor: pointer;
+            background-color: #e6a36166;
+            border-radius: 0.6em;
+            transition: all 0.2s;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #mouseModeButton:hover{
+            border: 0.25em solid #3e2b00;
+            transition: all 0.2s;
+        }
+
+        .creditsContainer {
+            visibility: collapse;
+            display: none;
+            height: 0em;
+            opacity: 0;
+            transition: height ease-in-out 1s 0.7s, opacity 0.7s, visibility 0s 1.7s;
+        }
+
+        .creditsContainer.displayed{
+            display: block;
+        }
+
+
+        .creditsContainer.expanded {
+            visibility: visible;
+            opacity: 1;
+            transition: height ease-in-out 1s, opacity 0.7s 1s;
+        }
+
+        .secretButton{
+            position: fixed;
+            top:0px;
+            opacity: 0.8; 
+        }
+
+        .invisible{
+            visibility:collapse;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            #modeContainer{
+                visibility: collapse;
+                display: none;
+            }
+        }
+
+        </style>
+        <script>        
+            
+            addEventListener("touchstart", function (e) { //makes sure the fanpointer is not loaded if there is a touchinput.
+                document.getElementById("modeContainer").classList.add("invisible");
+                disableFan();
+                document.getElementById("screenDiv").classList.remove("expanded");
+            }, { passive: false });
+
+
+            let scriptLoaded = false;
+            function toggleFan() { //enables and disables the events and animations of the fan script.
+                if (!fanEnabled) {
+                    enableFan();
+                } else {
+                    disableFan();
+                }
+            }
+
+            let counter = 0;
+            function dontPushMyButtons() {
+                counter++;
+                switch (counter){
+                    case 1: 
+                        alert("I told you it's boring... Did you expect something to happen?");
+                        break;
+                    case 2:
+                        alert("Pushing the boundaries, are we?");
+                        break;
+                    case 3:
+                        alert("I am peace. I am serenity. I am balance. I am THE FORCE!")
+                        break;
+                    case 4:
+                        alert("Did you know that the average human has less than 2 legs? \nYou could go google that instead of pushing my Buttons!")
+                        break
+                    case 5:
+                        alert("Sure! you win! here is my hidden nonsense!");
+                        toggleContainer("secretContainer");
+                        break;
+                    default:
+                        alert("WHAT DO YOU WANT MORE!?")
+                }
+            }
+
+            function toggleContainer(elementId){ 
+                /*
+                this whole code is simply for my fancursor. 
+                the problem: when the credits container is collapsed, 
+                the elements inside are still present and clickable with my fan cursor. so we need to set "display: none;"
+                the "display: none" prevents any animations. so we need to time the display right to make the animations work
+                */
+                
+                const container = document.getElementById(elementId);
+
+                if (container.classList.contains("displayed")){
+                    setTimeout(() => {
+                        container.classList.remove("displayed");
+                    }, 2000);
+
+                    requestAnimationFrame(() => {
+                        container.style.height="0px"
+                        container.classList.remove("expanded");
+                    });
+                } else {
+                    const nElements = container.children.length;
+                    let height = nElements * 52 + 10;
+                    container.classList.add("displayed");
+                    requestAnimationFrame(() => {
+                        container.style.height= height + "px";
+                        container.classList.add("expanded");
+                    });
+                }
+
+            }
+
+            function toggleMouseMode(){ //toggles the fanpointer mouse mode
+                document.getElementById("screenDiv").classList.toggle("expanded");
+                document.getElementById("cursorDiv").style.top = "500px";
+                document.getElementById("cursorDiv").style.left = "300px";
+                toggleFan();
+            }
+
+            function toggleDebugging(){ // adds crosshair, vectors and Values to the Fanpointer Elements
+                toggleDebugger();
+                document.getElementById("debuggingView").classList.toggle("displayed");
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="container">
+            <div>
+                <h1>Welcome to My Credits Page</h1>
+                <a class="a" id="unveilCredits" onclick="toggleContainer('creditsContainer')">Click here to find my credit submitions</a>
+
+            </div>
+
+            <div class="creditsContainer" id="creditsContainer">
+                <a  id="creditLink1" href="./credits/A20/index.htm">Credit task 1 - A20</a>
+                <a  id="creditLink2" href="./credits/A30/index.htm">Credit task 2 - A30</a>
+                <a  id="creditLink3" href="./credits/A40/index.html">Credit task 3 - A40</a>
+                <a  id="creditLink4" href="./credits/A45/index.html">Credit task 4 - A45</a>
+                <a  id="creditLink5" href="./credits/A41/index.htm">Credit task 5 - A41</a>
+                <a  id="creditLink6" href="./credits/A50/A50.html">Credit task 6 - A50</a>
+                <a  id="creditLink7" href="./credits/A81/index.html">Credit task 7 - A81</a>
+                <a  id="creditLink8" href="./credits/A345/A345.html">Credit task 8 - A345</a>
+                <a  id="creditLink9" href="./credits/A380/A380.html">Credit task 9 - A380</a>
+                <a  id="creditLink10" href="./credits/A390/A390.html">Credit task 10 - A390</a>
+                <a  id="creditLink11" href="./credits/A391/A391.html">Credit task 11 - A391</a>
+                <a  id="creditLink12" href="./credits/A350/A350.html">Credit task 12 - A350</a>
+                <a  id="creditLink13" href="./project/index.html">7vor7 Webpage</a>
+            </div>
+
+            <!--
+                The button for the alternative mouse mode.
+                This button toggles the fan script to activate an alternate way the mouse works. 
+                It is not part of the project, but I thought it would be fun to include it here.
+            -->
+            <div class="buttonContainer" id="modeContainer">
+                <button type="button" title="no button" id="mouseModeButton" onclick="toggleMouseMode()"> 
+                    <h3>alternative Mouse Mode</h3>
+                </button>
+            </div>
+
+            <!--
+                The button and container for some nonsense that I created in the past.
+            -->
+            <div class="buttonContainer">
+                <button type="button" title="no button" id="nonsenseButton" onclick="dontPushMyButtons()"> 
+                    <span style="font-weight: bold; font-size: 20px;">super boring nonsense button</span> <br> 
+                    Click under no circumstance! <br> 
+                    Peligro de muerte por aburrimiento <br> 
+                    변기에는 사용하지 마세요 
+                </button>
+            </div>
+
+            <div class="creditsContainer" id="secretContainer">
+                <a id="secretLink1" href="./nonsense/RandomDices.html" >Roll all the Dice</a>
+                <a id="secretLink2" href="./nonsense/catchMeIfYouCan.html">Catch me if you Can!</a>
+                <a id="secretLink3" href="./nonsense/AngryMeteor.html">Angry Meteor</a>
+                <a id="secretLink4" href="./nonsense/GuessPCNumber vol2.html">Guessing Game</a>
+                <a id="secretLink5" href="./nonsense/guessMyNumber.html">Another Guessing Game</a>
+            </div>
+        </div>
+        <div class="secretButton">
+            <button id="bSecretToggle" onclick="toggleContainer('secretContainer');">Nonsense</button>
+            <button id="bToggleDebugging" onclick="toggleDebugging()">debugger</button>
+        </div>
+    </body>
+</html>
