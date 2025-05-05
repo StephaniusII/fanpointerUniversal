@@ -16,9 +16,18 @@ html, body {
     display: block;
     height: 100%;
     width: 100%;
-    background-color: none(255, 254, 219);
+    background-color: none;
     cursor: none;
     visibility: collapse;
+}
+
+.fanstuff img{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: auto;
+    width: auto;
+    overflow: visible;
 }
 
 .fanstuff.expanded{

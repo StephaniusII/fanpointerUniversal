@@ -11,6 +11,8 @@ const cursorVelocity    =   {vel:   0.0,     velX:  0.0,  velY:  0.0};
 const accelerationXY    =   {x:     0.0,     y:     0.0};
 const relPos            =   {distance: 0.0, angle: 0.0, angleOffset: 0.0};
 
+let elements;
+
 //size of playarea
 var screensize          =   null;
 let fanSpeed = 0.1;
@@ -26,25 +28,31 @@ let initialized = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     initFan();
-    enableFan();
 });
 
 
 function initFan(){
     window.addEventListener("resize", updateScreenSize);
+    updateScreenSize();
     addEventListener("mousemove", moveFan, { passive: false});
     addEventListener("wheel", turnFan, { passive: false});    
     addEventListener("click", clicked, {passive: false});
     addEventListener("dragstart", (e) => e.preventDefault(), {passive: false});
     addEventListener("dragover", (e) => e.preventDefault(), {passive: false});
-    fanEnabled = true;
-    initialized = true;
+
+    elements = document.querySelectorAll('a, button, input, [onclick], [role="button"], [tabindex]');
+
+    elements.forEach((element, index) => {
+        if (!element.id) { // If element has no ID
+            element.id = `auto-id-${index}`; // Assign a unique ID based on its index
+        }
+    });
 
     //add the fan styles css to the head of the document
     const link = document.createElement("link");
     link.rel = "stylesheet";
     link.type = "text/css";
-    link.href = "fanPointer/stylesFan.css"; // Replace with your stylesheet URL
+    link.href = "./fanPointer/stylesFan.css"; // Replace with your stylesheet URL
     document.head.appendChild(link);
 
     //append the HTML elements for the fanPointer to the body
@@ -94,6 +102,17 @@ function initFan(){
     }
 
     initialized = true;
+    //take the previous state of the fan from the sessionStorage
+    sessionStorage.getItem("isEnabled") === "true" ? enableFan() : disableFan();
+
+}
+
+function toggleFan() { //enables and disables the events and animations of the fan script.
+    if (!fanEnabled) {
+        enableFan();
+    } else {
+        disableFan();
+    }
 }
 
 function enableFan(){
@@ -102,25 +121,45 @@ function enableFan(){
     }
     screenDiv.classList.add("expanded");
     updateScreenSize();
-    fanEnabled = true;
-    requestAnimationFrame(update);
+
+    setTimeout(() => {
+        fanEnabled = true;
+        requestAnimationFrame(update);
+    }, 210);    //delayed to prevent clicking on the first frame.
+                //animation frame is not triggered again if fanEnabled is false.
+
+    console.log("Fan enabled");
+
+    //save mouse mode to sessionStorage
+    sessionStorage.setItem("isEnabled", true);
+
 };
 
 function disableFan(){
     fanEnabled = false;
-    const elements = document.querySelectorAll(".target");
     setTimeout(() => {
         elements.forEach((element) => {
             element.classList.remove("clicked")
             element.classList.remove("hover")
         });
     }, 200);
+    screenDiv.classList.remove("expanded");
+    console.log("Fan disabled");
+
+    //save mouse mode to sessionStorage
+    sessionStorage.setItem("isEnabled", false);
+
 }
 
 
 
 function updateScreenSize() {
     screensize = {right: window.innerWidth, bottom: window.innerHeight, top: 0, left: 0 };
+    if (screensize.width < 786) {
+        fanSpeed = 0.05;
+    } else {
+        fanSpeed = 0.1;
+    }
 }
 
 function clicked(){
@@ -144,7 +183,7 @@ function moveFan(e){
 function turnFan(e){
     if (fanEnabled){
         e.preventDefault();
-        fanAngle=(fanAngle+e.deltaY/500)%(2*Math.PI);
+        fanAngle=(fanAngle+e.deltaY/300)%(2*Math.PI);
         if (fanAngle < 0){
             fanAngle = 2*Math.PI + fanAngle;
         }
@@ -374,17 +413,20 @@ function update(time) {
 
     scrollToPosition('cursorDiv');
 
-    const elements = document.querySelectorAll(
-        'a, button, [onclick], [role="button"], [tabindex]'
-      );
-
     elements.forEach((element) => {
         try {
             if (isPointerOnObject("pointer", element.id)) {
                 element.classList.add("hover")
                 if (clickOccured){
                     element.classList.add("clicked")
-                    element.click();
+
+                    //makes sure that the element is clicked even if it is an SVG element
+                    //and has an onclick attribute. This is needed for the fanPointer to work with SVG elements
+                    if (element instanceof SVGElement && element.hasAttribute("onclick")) {
+                        element.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+                    } else { element.click(); }
+
+                    element.focus();
                     clickOccured = false;
                     setTimeout(() => {
                         element.classList.remove("clicked");
