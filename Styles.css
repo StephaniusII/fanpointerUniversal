@@ -82,6 +82,12 @@ a:not(:hover) {
     animation-fill-mode: backwards;
 }
 
+div:hover {
+    animation-name: linkHover;
+    animation-duration: 0.3s;
+    animation-fill-mode: forwards;
+    background-color: #e6a36166;
+}
 
 .buttonGreen {
     border: 0.15em solid #2e3700;

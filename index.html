@@ -6,8 +6,6 @@
         <title>Credits Page</title>
         <link rel="stylesheet" href="Styles.css">
         <script src="fanpointer/fan.js"></script>
-        <script src="fanpointer/touchInputHandler.js"></script>
-
 
         <style>
         @keyframes buttonAlert {
@@ -119,13 +117,6 @@
             display: none;
         }
 
-        @media (max-width: 600px) {
-            #modeContainer{
-                visibility: collapse;
-                display: none;
-            }
-        }
-
         </style>
         <script>        
             let counter = 0;
@@ -185,9 +176,6 @@
             }
 
             function toggleMouseMode(){ //toggles the fanpointer mouse mode
-                document.getElementById("screenDiv").classList.toggle("expanded");
-                document.getElementById("cursorDiv").style.top = "500px";
-                document.getElementById("cursorDiv").style.left = "300px";
                 toggleFan();
             }
 

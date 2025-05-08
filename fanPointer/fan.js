@@ -11,7 +11,8 @@ const cursorVelocity    =   {vel:   0.0,     velX:  0.0,  velY:  0.0};
 const accelerationXY    =   {x:     0.0,     y:     0.0};
 const relPos            =   {distance: 0.0, angle: 0.0, angleOffset: 0.0};
 
-let elements;
+//Contains elements that are clickable or hoverable.
+let elements = new Set();
 
 //size of playarea
 var screensize          =   null;
@@ -26,12 +27,15 @@ let fanEnabled          =   false;
 
 let initialized = false;
 
+const scriptDirectory = new URL(document.currentScript.src).pathname.split('/').slice(0, -1).join('/');
+
 document.addEventListener("DOMContentLoaded", () => {
     initFan();
 });
 
 
 function initFan(){
+
     window.addEventListener("resize", updateScreenSize);
     updateScreenSize();
     addEventListener("mousemove", moveFan, { passive: false});
@@ -39,14 +43,6 @@ function initFan(){
     addEventListener("click", clicked, {passive: false});
     addEventListener("dragstart", (e) => e.preventDefault(), {passive: false});
     addEventListener("dragover", (e) => e.preventDefault(), {passive: false});
-
-    elements = document.querySelectorAll('a, button, input, [onclick], [role="button"], [tabindex]');
-
-    elements.forEach((element, index) => {
-        if (!element.id) { // If element has no ID
-            element.id = `auto-id-${index}`; // Assign a unique ID based on its index
-        }
-    });
 
     //add the fan styles css to the head of the document
     const link = document.createElement("link");
@@ -57,24 +53,24 @@ function initFan(){
 
     //append the HTML elements for the fanPointer to the body
     const container = document.createElement("div");
-    container.id = "screenDiv";
+    container.id = "fanContainer";
     container.classList.add("fanstuff");
 
     container.innerHTML = `
         <div id="cursorDiv">
-            <img id="cursor" src="./fanpointer/images/cursor.webp" alt="">
+            <img id="cursor" src="${scriptDirectory}/images/cursor.webp" alt="">
             <svg class="fsvg" id="pointerSVG">
                 <circle id="pointer" r="4px" cx="4px" cy="4px"></circle>
             </svg>
         </div>
         <div id="fanpointer">
-            <img id="fan" src="./fanpointer/images/fancursor.webp" alt="">
-            <img id="airflow" src="./fanpointer/images/airflow.svg" alt="">
+            <img id="fan" src="${scriptDirectory}/images/fancursor.webp" alt="">
+            <img id="airflow" src="${scriptDirectory}/images/airflow.svg" alt="">
         </div>
         <div id="debuggingView"> 
             <span id="posSpan"></span>
-            <img id="crosshair1" class="crosshair" src="./fanpointer/images//crosshair.svg" height="50px" alt="">
-            <img id="crosshair2" class="crosshair" src="./fanpointer/images//crosshair.svg" height="50px" alt="">
+            <img id="crosshair1" class="crosshair" src="${scriptDirectory}/images//crosshair.svg" height="50px" alt="">
+            <img id="crosshair2" class="crosshair" src="${scriptDirectory}/images//crosshair.svg" height="50px" alt="">
             <svg class="fsvg">
                 <line id="accelerationVector" x1="0px" x2="20px" y1="0px" y2="20px" stroke="red" fill="none" stroke-width="4"></line>
                 <line id="speedVector" x1="0px" x2="20px" y1="0px" y2="20px" stroke="blue" fill="none" stroke-width="2"></line>
@@ -82,29 +78,92 @@ function initFan(){
             </svg>
         </div>
     `;
-    document.body.appendChild(container);
+    const fragment = document.createDocumentFragment();
+    fragment.appendChild(container);
+    document.body.appendChild(fragment);    
+
+    //loads and adds script and event listeners for touchInput
+    loadScript(`${scriptDirectory}/touchInputHandler.js`);
+
+    // get clickable elements
+    document.querySelectorAll('a, button, input, [onclick], [role="button"], [tabindex]').forEach(element => elements.add(element));
 
     //copy each :hover class to a .hover class.
     //this is needed because the :hover class does not work with the fanPointer
     //Thanks microsoft copilot for this one.
     for (let sheet of document.styleSheets) {
         try {
+            // Skip stylesFan.css
+            if (sheet.href && sheet.href.includes("stylesFan.css")) {
+                continue; 
+            }
+    
+            // Check if the stylesheet can be accessed
+            if (!sheet.cssRules) {
+                console.warn(`Cannot access rules for ${sheet.href}`);
+                continue;
+            }
+    
             for (let rule of sheet.cssRules) {
                 if (rule.selectorText && rule.selectorText.includes(":hover")) {
                     let newSelector = rule.selectorText.replace(":hover", ".hover");
                     let newRule = `${newSelector} { ${rule.style.cssText} }`;
                     sheet.insertRule(newRule, sheet.cssRules.length);
+                    console.log("Added rule:", newRule);
+    
+                    let baseSelector = rule.selectorText.replace(":hover", "").trim();
+                    try {
+                        const foundElements = document.querySelectorAll(baseSelector);
+                        foundElements.forEach(element => elements.add(element));
+                    } catch (err) {
+                        console.warn("Invalid selector:", baseSelector);
+                    }
                 }
             }
         } catch (e) {
-            console.warn("Skipping stylesheet due to CORS restrictions:", sheet.href);
+            console.warn(`Skipping stylesheet due to CORS restrictions: ${sheet.href}`);
         }
     }
 
+    if (debugging){
+        console.log("All interactive elements:", elements);
+    }
+
+    //add an id to each element that doesn't have one
+    const elementsArray = Array.from(elements); // Convert Set to Array
+    let idAdded = [];
+    for (let i = 0; i < elementsArray.length; i++) {
+        if (!elementsArray[i].id) {
+            elementsArray[i].id = `auto-id-${i}`;
+            idAdded.push(elementsArray[i]);
+        }
+        console.log("Added ID to element:", elementsArray[i]);
+    }
+
+    //add a mutation observer to the document body to detect added or removed elements
+    //next step: check new node and child nodes for clickable and hoverable elements
+    //and add them to the elements set.
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+                if (node.nodeType === 1) { // Ensures it's an element (not text)
+                    console.log("New element added:", node);
+                }
+            });
+            mutation.removedNodes.forEach(node => {
+                if (node.nodeType === 1) { // Ensures it's an element (not text)
+                    console.log("Element removed:", node);
+                }
+            });
+        });
+    });
+    
+    // Start observing the `document.body` for added elements
+    observer.observe(document.body, { childList: true, subtree: true });
+    
     initialized = true;
     //take the previous state of the fan from the sessionStorage
     sessionStorage.getItem("isEnabled") === "true" ? enableFan() : disableFan();
-
 }
 
 function toggleFan() { //enables and disables the events and animations of the fan script.
@@ -119,7 +178,7 @@ function enableFan(){
     if (!initialized){
         initFan();
     }
-    screenDiv.classList.add("expanded");
+    fanContainer.classList.add("expanded");
     updateScreenSize();
 
     setTimeout(() => {
@@ -143,7 +202,7 @@ function disableFan(){
             element.classList.remove("hover")
         });
     }, 200);
-    screenDiv.classList.remove("expanded");
+    fanContainer.classList.remove("expanded");
     console.log("Fan disabled");
 
     //save mouse mode to sessionStorage
@@ -151,7 +210,12 @@ function disableFan(){
 
 }
 
-
+function loadScript(url) {
+    const script = document.createElement('script');
+    script.src = url;
+    script.async = false;
+    document.head.appendChild(script);
+}
 
 function updateScreenSize() {
     screensize = {right: window.innerWidth, bottom: window.innerHeight, top: 0, left: 0 };
@@ -188,7 +252,7 @@ function turnFan(e){
             fanAngle = 2*Math.PI + fanAngle;
         }
 
-        fanpointer.style.transform = "rotate("+fanAngle+"rad)";
+        fanpointer.style.transform = `rotate(${fanAngle}rad)`;
     }
 }
 
@@ -199,7 +263,7 @@ function turnFanTouch(angleDiff){
             fanAngle = 2*Math.PI + fanAngle;
         }
 
-        fanpointer.style.transform = "rotate("+fanAngle+"rad)";
+        fanpointer.style.transform = `rotate(${fanAngle}rad)`;
     }
 }
 
@@ -354,12 +418,14 @@ function toggleDebugger(){
         debugging = true;
         debbuggingViewElem.style.display = "block";
         document.getElementById("pointer").style.fill = "red" 
+        crosshair1.height = "50px";
+        crosshair2.height = "50px";
     }
 };
 
 function showValues(){
     const posSpan = document.getElementById("posSpan");
-    posSpan.innerHTML = "Distance: " + Math.floor(relPos.distance) + "<br> Relative Angle: "+relPos.angle.toFixed(2)+ "<br> Angle Offset: "+relPos.angleOffset.toFixed(2)+"<br> Velocity: "+cursorVelocity.vel.toFixed(2);
+    posSpan.innerHTML = `Distance: ${Math.floor(relPos.distance)} <br> Relative Angle: ${relPos.angle.toFixed(2)}<br> Angle Offset: "${relPos.angleOffset.toFixed(2)}<br> Velocity: ${cursorVelocity.vel.toFixed(2)}`;
 
     const speedVectorElem = document.getElementById("speedVector");
     speedVectorElem.x1.baseVal.value = cursorDiv.getBoundingClientRect().x;
@@ -392,6 +458,36 @@ function showValues(){
     crosshair2Elem.left=(fanPosX)+"px";
 }
 
+function checkInteraction(elementsSet){
+    elementsSet.forEach((element) => {
+        try {
+            if (isPointerOnObject("pointer", element.id)) {
+                element.classList.add("hover")
+                if (clickOccured){
+                    element.classList.add("clicked")
+
+                    //makes sure that the element is clicked even if it is an SVG element
+                    //and has an onclick attribute. This is needed for the fanPointer to work with SVG elements
+                    if (element instanceof SVGElement && element.hasAttribute("onclick")) {
+                        element.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+                    } else { element.click(); }
+
+                    clickOccured = false;
+                    setTimeout(() => {
+                        element.classList.remove("clicked");
+                    }, 200);
+                } else {
+                    element.classList.remove("clicked")
+                }
+            } else {
+                element.classList.remove("hover")
+            }
+        } catch (error) {
+            console.error("Error processing element with ID:", element.id, error);
+        }
+
+    });
+}
 
 let lastTime = null;
 function update(time) {
@@ -413,35 +509,7 @@ function update(time) {
 
     scrollToPosition('cursorDiv');
 
-    elements.forEach((element) => {
-        try {
-            if (isPointerOnObject("pointer", element.id)) {
-                element.classList.add("hover")
-                if (clickOccured){
-                    element.classList.add("clicked")
-
-                    //makes sure that the element is clicked even if it is an SVG element
-                    //and has an onclick attribute. This is needed for the fanPointer to work with SVG elements
-                    if (element instanceof SVGElement && element.hasAttribute("onclick")) {
-                        element.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
-                    } else { element.click(); }
-
-                    element.focus();
-                    clickOccured = false;
-                    setTimeout(() => {
-                        element.classList.remove("clicked");
-                    }, 200);
-                } else {
-                    element.classList.remove("clicked")
-                }
-            } else {
-                element.classList.remove("hover")
-            }
-        } catch (error) {
-            console.error("Error processing element with ID:", element.id, error);
-        }
-
-    });
+    checkInteraction(elements);
 
     if (debugging){
         showValues()

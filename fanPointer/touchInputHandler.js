@@ -1,4 +1,4 @@
-/* Try one to create a multi-touch input handler. goal is to implement this in the fan pointer script.
+/* Try one to create a multi-touch input handler. Goal is to implement this in the fan pointer script.
 author: Stephan Burn
 date: 05.05.2025
 */
@@ -39,7 +39,6 @@ function touchmove(event) {
             var touch = touches[i];
             var x = touch.clientX;
             var y = touch.clientY;
-            // Handle the touch event here
         }
         if (touches.length == 2){
             const touch1 = event.touches[0];
@@ -54,6 +53,7 @@ function touchmove(event) {
             const distanceDiff = distance - distanceStart;
             turnFanTouch(angleDiff);
         }
+
         moveFan(touches[0]);
     }
 }
@@ -63,15 +63,24 @@ function touchend(event) {
         event.preventDefault();
         touches = event.touches;
         let touchTime = Date.now() - touchTimeStart;
-        console.log("ontouchend", touchTime);
         if (touchTime < 100) {
             clicked();
         } else {
-            //long press
+            //long press: 
+            // make sure to prevent trigger when finger moved
         }
 
     }
 
+}
+
+function getTouchByID(id) {
+    for (var i = 0; i < touches.length; i++) {
+        if (touches[i].identifier == id) {
+            return touches[i];
+        }
+    }
+    return null;
 }
 
 addEventListener("touchstart", touchstart, { passive: false});
